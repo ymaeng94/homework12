@@ -25,7 +25,7 @@ function FirstQuestion () {
         message: "What do you want to do?",
         choices: [
             "View Employees",
-            "View by Departments",
+            "View Departments",
             "Add Department",
             "Add Roles",
             "Add Employees",
@@ -67,11 +67,7 @@ function FirstQuestion () {
 
   function viewEmployees() {
     console.log("view all employee");
-    var query= `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
-    FROM employee e
-    LEFT JOIN role r ON e.role_id = r.id
-    LEFT JOIN department d ON d.id = r.department_id
-    LEFT JOIN employee m ON m.id = e.manager_id`
+    var query= `SELECT * from employee`
       
     connection.query(query, function(err, res) {
       if (err) throw err;
@@ -84,8 +80,8 @@ function FirstQuestion () {
 ////////////////////////////////////////////////////////////////////////////// 2 view employee by "department" //////////////////////////////////////////////
 
 function viewDepartments(){
-
-    var query = "SELECCT d.id, d.name, r.salary FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id"
+    console.log("view employee by department")
+    var query = `SELECT * from department`
     
     connection.query(query, function (err, res) {
     if (err) throw err;
@@ -93,13 +89,13 @@ function viewDepartments(){
     const departmentChoice = res.map(data => ({
     value: data.id, name: data.name
     }));
-    console.table(res);
+
     console.log("employee by department viewed successfully!")
     promptDepartment(departmentChoice);
   });
 }
 
-function promptDepartment () {
+function promptDepartment (departmentChoice) {
     inquirer
     .prompt ([
         {
@@ -112,11 +108,11 @@ function promptDepartment () {
     .then(function (answer) {
         console.log("answer", answer.department_name);
 
-        var query = "SELECCT d.id, d.name, r.salary FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id WHERE d.id = ?"
+        var query = `SELECT * from employee`
         
         connection.query(query, answer.department_name, function (err, res) {
             if(err) throw err;
-            console.table("response", res);
+            console.table(res);
             FirstQuestion();
         });
     });
